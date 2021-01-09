@@ -1083,17 +1083,20 @@ Json::Value ApiConnection::getMinerStatDetailPerMiner(
     return jRes;
 }
 
-std::string ApiConnection::getHttpMinerStatDetail()
+std::string ApiConnection::getHttpMinerStatDetail() // html -> json
 {
     Json::Value jStat = getMinerStatDetail();
+    /* Original
     uint64_t durationSeconds = jStat["host"]["runtime"].asUInt64();
     int hours = (int)(durationSeconds / 3600);
     durationSeconds -= (hours * 3600);
     int minutes = (int)(durationSeconds / 60);
     int hoursSize = (hours > 9 ? (hours > 99 ? 3 : 2) : 1);
+    Original */
 
-    /* Build up header*/
     std::stringstream _ret;
+    _ret << "[\"" << jStat["host"]["version"].asString() << "\""; // My
+    /* Original
     _ret << "<!doctype html>"
          << "<html lang=en>"
          << "<head>"
@@ -1137,22 +1140,28 @@ std::string ApiConnection::getHttpMinerStatDetail()
          << "<th class=right>Power</th>"
          << "</tr>"
          << "</thead><tbody>";
+    Original */
 
-    /* Loop miners */
+    /* Original Loop miners
     double total_hashrate = 0;
     double total_power = 0;
     unsigned int total_solutions = 0;
+    Original */
 
     for (Json::Value::ArrayIndex i = 0; i != jStat["devices"].size(); i++)
     {
         Json::Value device = jStat["devices"][i];
+        /* Original
         double hashrate = std::stoul(device["mining"]["hashrate"].asString(), nullptr, 16);
         double power = device["hardware"]["sensors"][2].asDouble();
         unsigned int solutions = device["mining"]["shares"][0].asUInt();
         total_hashrate += hashrate;
         total_power += power;
         total_solutions += solutions;
+        Original */
 
+        _ret << ", \"" << device["mining"]["hashrate"].asString() << "\""; // My
+        /* Original
         _ret << "<tr" << (device["mining"]["paused"].asBool() ? " class=\"bg-red\"" : "")
              << ">";  // Open row
 
@@ -1173,15 +1182,20 @@ std::string ApiConnection::getHttpMinerStatDetail()
         _ret << "<td class=right>" << device["hardware"]["sensors"][2].asString() << "</td>";
 
         _ret << "</tr>";  // Close row
+        Original */
     }
+    /* Original
     _ret << "</tbody>";
+    Original */
+    _ret << "]"; // My
 
-    /* Summarize */
+    /* Original Summarize
     _ret << "<tfoot><tr class=bg-header0><td colspan=4 class=right>Total</td><td class=right>"
          << dev::getFormattedHashes(total_hashrate) << "</td><td class=right>" << total_solutions
          << "</td><td colspan=3 class=right>" << setprecision(2) << total_power << "</td></tfoot>";
 
     _ret << "</table></body></html>";
+    Original */
     return _ret.str();
 }
 
