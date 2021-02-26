@@ -1086,116 +1086,16 @@ Json::Value ApiConnection::getMinerStatDetailPerMiner(
 std::string ApiConnection::getHttpMinerStatDetail() // html -> json
 {
     Json::Value jStat = getMinerStatDetail();
-    /* Original
-    uint64_t durationSeconds = jStat["host"]["runtime"].asUInt64();
-    int hours = (int)(durationSeconds / 3600);
-    durationSeconds -= (hours * 3600);
-    int minutes = (int)(durationSeconds / 60);
-    int hoursSize = (hours > 9 ? (hours > 99 ? 3 : 2) : 1);
-    Original */
-
     std::stringstream _ret;
-    _ret << "[\"" << jStat["host"]["version"].asString() << "\""; // My
-    /* Original
-    _ret << "<!doctype html>"
-         << "<html lang=en>"
-         << "<head>"
-         << "<meta charset=utf-8>"
-         << "<meta http-equiv=\"refresh\" content=\"30\">"
-         << "<title>" << jStat["host"]["name"].asString() << "</title>"
-         << "<style>"
-         << "body{font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,"
-         << "\"Helvetica Neue\",Helvetica,Arial,sans-serif;font-size:16px;line-height:1.5;"
-         << "text-align:center;}"
-         << "table,td,th{border:1px inset #000;}"
-         << "table{border-spacing:0;}"
-         << "td,th{padding:3px;}"
-         << "tbody tr:nth-child(even){background-color:" << HTTP_ROW0_COLOR << ";}"
-         << "tbody tr:nth-child(odd){background-color:" << HTTP_ROW1_COLOR << ";}"
-         << ".mx-auto{margin-left:auto;margin-right:auto;}"
-         << ".bg-header1{background-color:" << HTTP_HDR1_COLOR << ";}"
-         << ".bg-header0{background-color:" << HTTP_HDR0_COLOR << ";}"
-         << ".bg-red{color:" << HTTP_ROWRED_COLOR << ";}"
-         << ".right{text-align: right;}"
-         << "</style>"
-         << "<meta http-equiv=refresh content=30>"
-         << "</head>"
-         << "<body>"
-         << "<table class=mx-auto>"
-         << "<thead>"
-         << "<tr class=bg-header1>"
-         << "<th colspan=9>" << jStat["host"]["version"].asString() << " - " << setw(hoursSize)
-         << hours << ":" << setw(2) << setfill('0') << fixed << minutes
-         << "<br>Pool: " << jStat["connection"]["uri"].asString() << "</th>"
-         << "</tr>"
-         << "<tr class=bg-header0>"
-         << "<th>PCI</th>"
-         << "<th>Device</th>"
-         << "<th>Mode</th>"
-         << "<th>Paused</th>"
-         << "<th class=right>Hash Rate</th>"
-         << "<th class=right>Solutions</th>"
-         << "<th class=right>Temp.</th>"
-         << "<th class=right>Fan %</th>"
-         << "<th class=right>Power</th>"
-         << "</tr>"
-         << "</thead><tbody>";
-    Original */
-
-    /* Original Loop miners
-    double total_hashrate = 0;
-    double total_power = 0;
-    unsigned int total_solutions = 0;
-    Original */
+    _ret << "[\"" << jStat["connection"]["uri"].asString() << "\"";
 
     for (Json::Value::ArrayIndex i = 0; i != jStat["devices"].size(); i++)
     {
         Json::Value device = jStat["devices"][i];
-        /* Original
-        double hashrate = std::stoul(device["mining"]["hashrate"].asString(), nullptr, 16);
-        double power = device["hardware"]["sensors"][2].asDouble();
-        unsigned int solutions = device["mining"]["shares"][0].asUInt();
-        total_hashrate += hashrate;
-        total_power += power;
-        total_solutions += solutions;
-        Original */
-
         _ret << ", \"" << device["mining"]["hashrate"].asString() << "\""; // My
-        /* Original
-        _ret << "<tr" << (device["mining"]["paused"].asBool() ? " class=\"bg-red\"" : "")
-             << ">";  // Open row
-
-        _ret << "<td>" << device["hardware"]["pci"].asString() << "</td>";
-        _ret << "<td>" << device["hardware"]["name"].asString() << "</td>";
-        _ret << "<td>" << device["_mode"].asString() << "</td>";
-
-        _ret << "<td>"
-             << (device["mining"]["paused"].asBool() ? device["mining"]["pause_reason"].asString() :
-                                                       "No")
-             << "</td>";
-
-        _ret << "<td class=right>" << dev::getFormattedHashes(hashrate) << "</td>";
-
-        _ret << "<td class=right>" << device["mining"]["shares"][0].asString() << "</td>";
-        _ret << "<td class=right>" << device["hardware"]["sensors"][0].asString() << "</td>";
-        _ret << "<td class=right>" << device["hardware"]["sensors"][1].asString() << "</td>";
-        _ret << "<td class=right>" << device["hardware"]["sensors"][2].asString() << "</td>";
-
-        _ret << "</tr>";  // Close row
-        Original */
     }
-    /* Original
-    _ret << "</tbody>";
-    Original */
-    _ret << "]"; // My
+    _ret << "]";
 
-    /* Original Summarize
-    _ret << "<tfoot><tr class=bg-header0><td colspan=4 class=right>Total</td><td class=right>"
-         << dev::getFormattedHashes(total_hashrate) << "</td><td class=right>" << total_solutions
-         << "</td><td colspan=3 class=right>" << setprecision(2) << total_power << "</td></tfoot>";
-
-    _ret << "</table></body></html>";
-    Original */
     return _ret.str();
 }
 
